@@ -27,7 +27,7 @@
       }
     },
     "android": {
-      "package": "com.feyton.phantom"
+      "package": "com.phantom.codebandits"
     }
   },
   "android": {
@@ -39,7 +39,16 @@
     "permissions": [
       "ACCESS_BACKGROUND_LOCATION"
     ],
-    "versionCode": 1
+    "versionCode": 1,
+    "config": {
+      "googleMaps": {
+        "apiKey": "AIzaSyCiVFFn9qVnu1I8VuSl78Qxl51vnGdVlMA"
+      }
+    }
+  },
+  "ios": {
+    "bundleIdentifier": "com.phantom.codebandits",
+    "buildNumber": "1.0.0"
   },
   "web": {
     "favicon": "./assets/adaptive-icon.png"

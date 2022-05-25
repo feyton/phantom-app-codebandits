@@ -1,0 +1,13 @@
+{
+  "build": {
+    "production": {
+      "releaseChannel": "production"
+    },
+    "dev": {
+      "releaseChannel": "latest"
+    }
+  },
+  "cli": {
+    "version": ">= 0.52.0"
+  }
+}

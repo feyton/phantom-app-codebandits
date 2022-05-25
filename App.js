@@ -21,8 +21,10 @@ import LoginScreen from "./screens/LoginScreen";
 import ManagementScreen from "./screens/ManagementScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import mainStyles from "./styles.js";
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import AppNavigator from "./AppNavigator";
 
-const Stack = createNativeStackNavigator();
+
 
 export default function App(props) {
   const [IsReady, SetIsReady] = useState(false);
@@ -49,21 +51,10 @@ export default function App(props) {
           {...eva}
           theme={{ ...eva.dark, ...theme }}
         >
-          <NavigationContainer>
-            <SafeAreaView style={mainStyles.AndroidSafeArea} {...props}>
-              <Layout style={{ flex: 1, justifyContent: "center" }}>
-                <Stack.Navigator screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="Home" component={HomeScreen} />
-                  <Stack.Screen name="Login" component={LoginScreen} />
-                  <Stack.Screen
-                    name="Management"
-                    component={ManagementScreen}
-                  />
-                  <Stack.Screen name="Profile" component={ProfileScreen} />
-                </Stack.Navigator>
-              </Layout>
-            </SafeAreaView>
-          </NavigationContainer>
+          <SafeAreaProvider>
+            <AppNavigator/>
+          </SafeAreaProvider>
+          
         </ApplicationProvider>
       </Provider>
     </>

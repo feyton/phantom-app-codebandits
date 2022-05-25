@@ -1,11 +1,17 @@
 import { Layout, Text } from "@ui-kitten/components";
 import React, { useEffect, useState } from "react";
+import { ScrollView } from "react-native-gesture-handler";
 import BusManagement from "../components/BusManagement";
 import axiosBase from "../utils/Api";
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation, route }) {
+  let res_data = null;
+  if (route?.params) {
+    res_data = route?.params?.res_data;
+  }
+  console.log(res_data);
   const [loading, setloading] = useState(false);
-  const [data, setData] = useState();
+  const [data, setData] = useState(res_data);
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -18,36 +24,36 @@ export default function ProfileScreen() {
         setloading(false);
       }
     };
-
-    fetchProfile();
+    if (!data) {
+      fetchProfile();
+    }
   }, []);
   return (
-    <Layout style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+    <Layout style={{ flex: 1 }}>
       {data ? (
-        <Layout>
-          <Text style={{ fontSize: 16, fontWeight: "700" }}>Profile</Text>
-          <Layout>
-            <Text style={{ borderBottomWidth: 2 }}>ABOUT ME</Text>
-            <Text>
-              {data.user.firstName} {data.user.lastName}
-            </Text>
-            <Text>National Id: {data.nationalID}</Text>
-          </Layout>
+        <Layout style={{ padding: 10 }}>
           <Layout>
             <Text style={{ borderBottomWidth: 2 }}>BUS INFO</Text>
-            <Text>
-              {data.user.firstName} {data.user.lastName}
+            <Text style={{ fontFamily: "Lexend" }}>
+              Plate: {data?.bus?.plateNumber}
             </Text>
-            <Text>National Id: {data.nationalID}</Text>
+            <Text style={{ fontFamily: "Lexend" }}>
+              Seats: {data?.bus?.seats}
+            </Text>
           </Layout>
           <Layout>
-            <Text style={{ borderBottomWidth: 2 }}>ROUTE INFO</Text>
+            <Text category={"h2"}>ROUTE INFO</Text>
             <Text>Origin: {data?.bus?.route.origin}</Text>
             <Text>Destination: {data?.bus?.route.destination}</Text>
           </Layout>
-          <Layout>
-            {data?.bus?.route ? <BusManagement bus={data.bus} /> : ""}
-          </Layout>
+
+          <ScrollView>
+            {data?.bus?.route ? (
+              <BusManagement bus={data.bus} />
+            ) : (
+              <Text></Text>
+            )}
+          </ScrollView>
         </Layout>
       ) : (
         <Text style={{ fontSize: 16, fontWeight: "700" }}>Loading</Text>

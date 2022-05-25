@@ -2,9 +2,11 @@ import {
   Button,
   CheckBox,
   Divider,
+  Icon,
   Input,
   Layout,
   Text,
+  
 } from "@ui-kitten/components";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -15,9 +17,19 @@ import { loginUser } from "../redux/reducers/authReducer";
 import styles from "../styles";
 import axiosBase from "../utils/Api";
 
+const EmailIcon = (props) => <Icon name={"email"} {...props} />;
+const InvalidIcon = (props) => (
+  <Icon fill={"red"} name={"close-circle-outline"} {...props} />
+);
+const ValidIcon = (props) => (
+  <Icon fill={"green"} name={"checkmark-circle-outline"} {...props} />
+);
+const PasswordIcon = (props) => <Icon name={"email"} {...props} />;
+
 export default function LoginScreen({ navigation }) {
   const [loading, setloading] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [err, seterr] = useState(false);
   const dispatch = useDispatch();
   const {
     register,
@@ -33,8 +45,11 @@ export default function LoginScreen({ navigation }) {
       setloading(true);
       const res = await axiosBase.post("/accounts/login", data);
       dispatch(loginUser(res.data.data));
-      navigation.navigate("Profile");
+      navigation.navigate("Profile", {
+        res_data: res?.data?.data,
+      });
     } catch (error) {
+      seterr(error?.response?.data?.data?.message || error.message);
       console.log(error);
     } finally {
       setloading(false);
@@ -42,7 +57,7 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <Layout style={{ padding: 10, flex: 1, justifyContent: "center" }}>
+    <Layout  style={{ padding: 10, flex: 1, justifyContent: "center" }}>
       <Text category={"h1"} style={{ textAlign: "center" }}>
         Login Page
       </Text>
@@ -53,7 +68,11 @@ export default function LoginScreen({ navigation }) {
           name="email"
           render={({ field: { onChange, value, onBlur } }) => (
             <Input
-              label={"Email: "}
+              label={(evaProps) => (
+                <Text style={{ fontSize: 20, margin: 10 }} {...evaProps}>
+                  Email:
+                </Text>
+              )}
               style={styles.textInput}
               value={value}
               onBlur={onBlur}
@@ -62,16 +81,13 @@ export default function LoginScreen({ navigation }) {
               keyboardType="email-address"
               autoFocus={true}
               textContentType="emailAddress"
+              autoCapitalize="none"
+              accessoryRight={errors?.email ? InvalidIcon : ValidIcon}
             />
           )}
           rules={{
-            required: {
-              value: true,
-              message: "Email is required",
-            },
             pattern: {
-              value:
-                /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+              value: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
               message: "Enter a valid email",
             },
           }}
@@ -95,24 +111,40 @@ export default function LoginScreen({ navigation }) {
               onChangeText={(value) => onChange(value)}
               textContentType="password"
               secureTextEntry={!visible}
+              autoCapitalize="none"
+              accessoryRight={errors?.password ? InvalidIcon : ValidIcon}
             />
           )}
         ></Controller>
         <CheckBox
-          style={mainStyles.checkbox}
+          style={{ ...mainStyles.checkbox, marginBottom: 10 }}
           checked={visible}
           onChange={() => setVisible(!visible)}
         >
           {"Show password"}
         </CheckBox>
-
-        <Button
-          disabled={!isValid}
-          onPress={handleSubmit(onSubmit)}
-          accessoryLeft={loading ? LoadingIndicator : ""}
+        <Layout
+          style={{
+            flexDirection: "row",
+            justifyContent: "flex-start",
+            paddingLeft: 10,
+            marginVertical: 10,
+          }}
         >
-          {!loading ? "Login" : "Sending"}
-        </Button>
+          <Text style={{ fontWeight: "700" }} status={"danger"}>
+            {err}
+          </Text>
+        </Layout>
+        <Layout style={{ flexDirection: "row", justifyContent: "center" }}>
+          <Button
+            style={{ paddingHorizontal: 20 }}
+            disabled={!isValid}
+            onPress={handleSubmit(onSubmit)}
+            accessoryLeft={loading ? LoadingIndicator : null}
+          >
+            {!loading ? "Login" : "Sending"}
+          </Button>
+        </Layout>
       </Layout>
     </Layout>
   );

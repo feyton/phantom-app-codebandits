@@ -3,27 +3,36 @@ import * as React from "react";
 import { StyleSheet } from "react-native";
 import { useDispatch } from "react-redux";
 import { LoadingIndicator } from "../components/BusManagement";
-import { logoutUser } from "../redux/reducers/authReducer";
 import axiosBase from "../utils/Api";
-const LoginButton = (props) => <Icon name={"facebook"} {...props}></Icon>;
-
+const LoginButton = (props) => (
+  <Icon name={"arrow-circle-right-outline"} {...props}></Icon>
+);
+const LogoutIcon = (props) => <Icon name={"power-outline"} {...props} />;
 export default function HomeScreen({ navigation }) {
   const [loading, setloading] = React.useState(false);
   const [loggedIn, setAuth] = React.useState(false);
+  const [data, setdata] = React.useState();
   const dispatch = useDispatch();
-  const handleLogout = () => {
-    dispatch(logoutUser);
-    setAuth(false);
+  const handleLogout = async () => {
+    try {
+      setloading(true);
+      await axiosBase.get("/accounts/logout");
+
+      setAuth(false);
+    } catch (error) {
+    } finally {
+      setloading(false);
+    }
   };
 
   React.useEffect(() => {
     const getProfile = async () => {
       try {
         setloading(true);
-        await axiosBase.get("/accounts/profile");
+        const res = await axiosBase.get("/accounts/profile");
         setAuth(true);
+        setdata(res.data?.data);
       } catch (error) {
-        console.log(error?.response);
       } finally {
         setloading(false);
       }
@@ -35,16 +44,28 @@ export default function HomeScreen({ navigation }) {
       <Text style={{ textAlign: "center" }} category={"h2"}>
         Welcome to Phantom
       </Text>
-      <Text category={"h2"}>This app is for drivers now only</Text>
+      <Text style={{ textAlign: "center", marginBottom: 5 }} category={"h2"}>
+        This app is for drivers now only
+      </Text>
       <Divider />
       {loading ? (
-        <Button
-          accessoryLeft={LoadingIndicator}
-          appearance="filled"
-          status={"success"}
+        <Layout
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            padding: 2,
+            marginTop: 5,
+            justifyContent: "center",
+          }}
         >
-          LOADING
-        </Button>
+          <Button
+            accessoryLeft={LoadingIndicator}
+            appearance="filled"
+            status={"success"}
+          >
+            LOADING
+          </Button>
+        </Layout>
       ) : (
         <>
           {loggedIn ? (
@@ -59,12 +80,17 @@ export default function HomeScreen({ navigation }) {
             >
               <Button
                 style={{ marginLeft: 3 }}
-                accessoryLeft={LoginButton}
-                onPress={() => navigation.navigate("Profile")}
+                accessoryRight={LoginButton}
+                onPress={() =>
+                  navigation.navigate("Profile", {
+                    res_data: data,
+                  })
+                }
               >
                 CONTINUE
               </Button>
               <Button
+                accessoryLeft={LogoutIcon}
                 style={{ marginLeft: 3 }}
                 status={"danger"}
                 onPress={() => handleLogout()}
@@ -73,12 +99,22 @@ export default function HomeScreen({ navigation }) {
               </Button>
             </Layout>
           ) : (
-            <Button
-              onPress={() => navigation.navigate("Login")}
-              accessoryLeft={LoginButton}
+            <Layout
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                padding: 2,
+                marginTop: 5,
+                justifyContent: "center",
+              }}
             >
-              LOGIN
-            </Button>
+              <Button
+                onPress={() => navigation.navigate("Login")}
+                accessoryLeft={LoginButton}
+              >
+                LOGIN
+              </Button>
+            </Layout>
           )}
         </>
       )}
