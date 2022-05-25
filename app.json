@@ -25,9 +25,13 @@
           "fetch"
         ]
       }
+    },
+    "android": {
+      "package": "com.feyton.phantom"
     }
   },
   "android": {
+    "package": "com.phantom.codebandits",
     "adaptiveIcon": {
       "foregroundImage": "./assets/adaptive-icon.png",
       "backgroundColor": "#FFFFFF"

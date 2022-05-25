@@ -1,16 +1,24 @@
-import * as SecureStore from "expo-secure-store";
+import {
+  Button,
+  CheckBox,
+  Divider,
+  Input,
+  Layout,
+  Text,
+} from "@ui-kitten/components";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Button, Text, TextInput, View } from "react-native";
+import { StyleSheet } from "react-native";
+import { useDispatch } from "react-redux";
+import { LoadingIndicator } from "../components/BusManagement";
+import { loginUser } from "../redux/reducers/authReducer";
 import styles from "../styles";
 import axiosBase from "../utils/Api";
-import saveItem from "../utils/SaveItem";
-
-
 
 export default function LoginScreen({ navigation }) {
   const [loading, setloading] = useState(false);
   const [visible, setVisible] = useState(false);
+  const dispatch = useDispatch();
   const {
     register,
     setValue,
@@ -24,9 +32,8 @@ export default function LoginScreen({ navigation }) {
     try {
       setloading(true);
       const res = await axiosBase.post("/accounts/login", data);
-      console.log(res.data.data);
-      await saveItem("token", res.data.data.access_token);
-      navigation.navigate("Profile")
+      dispatch(loginUser(res.data.data));
+      navigation.navigate("Profile");
     } catch (error) {
       console.log(error);
     } finally {
@@ -35,14 +42,18 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <View style={{ padding: 10 }}>
-      <Text style={styles.title}>Login Page</Text>
-      <View>
+    <Layout style={{ padding: 10, flex: 1, justifyContent: "center" }}>
+      <Text category={"h1"} style={{ textAlign: "center" }}>
+        Login Page
+      </Text>
+      <Divider />
+      <Layout>
         <Controller
           control={control}
           name="email"
           render={({ field: { onChange, value, onBlur } }) => (
-            <TextInput
+            <Input
+              label={"Email: "}
               style={styles.textInput}
               value={value}
               onBlur={onBlur}
@@ -51,7 +62,6 @@ export default function LoginScreen({ navigation }) {
               keyboardType="email-address"
               autoFocus={true}
               textContentType="emailAddress"
-
             />
           )}
           rules={{
@@ -76,7 +86,8 @@ export default function LoginScreen({ navigation }) {
             },
           }}
           render={({ field: { onChange, value, onBlur } }) => (
-            <TextInput
+            <Input
+              label={"Password: "}
               style={styles.textInput}
               placeholder="Password"
               value={value}
@@ -84,18 +95,34 @@ export default function LoginScreen({ navigation }) {
               onChangeText={(value) => onChange(value)}
               textContentType="password"
               secureTextEntry={!visible}
-              
             />
           )}
         ></Controller>
-        <Text onPress={()=>setVisible(!visible)}>{visible?"Hide password": "Show password"}</Text>
+        <CheckBox
+          style={mainStyles.checkbox}
+          checked={visible}
+          onChange={() => setVisible(!visible)}
+        >
+          {"Show password"}
+        </CheckBox>
 
         <Button
           disabled={!isValid}
           onPress={handleSubmit(onSubmit)}
-          title={!loading ? "Login" : "Sending"}
-        />
-      </View>
-    </View>
+          accessoryLeft={loading ? LoadingIndicator : ""}
+        >
+          {!loading ? "Login" : "Sending"}
+        </Button>
+      </Layout>
+    </Layout>
   );
 }
+
+const mainStyles = StyleSheet.create({
+  checkbox: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "flex-end",
+    margin: 3,
+  },
+});

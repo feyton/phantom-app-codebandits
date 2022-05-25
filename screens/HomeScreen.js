@@ -1,10 +1,20 @@
+import { Button, Divider, Icon, Layout, Text } from "@ui-kitten/components";
 import * as React from "react";
-import { Button, StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
+import { useDispatch } from "react-redux";
+import { LoadingIndicator } from "../components/BusManagement";
+import { logoutUser } from "../redux/reducers/authReducer";
 import axiosBase from "../utils/Api";
+const LoginButton = (props) => <Icon name={"facebook"} {...props}></Icon>;
 
 export default function HomeScreen({ navigation }) {
   const [loading, setloading] = React.useState(false);
   const [loggedIn, setAuth] = React.useState(false);
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    dispatch(logoutUser);
+    setAuth(false);
+  };
 
   React.useEffect(() => {
     const getProfile = async () => {
@@ -21,18 +31,58 @@ export default function HomeScreen({ navigation }) {
     getProfile();
   }, []);
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Phantom</Text>
-      <Text style={styles.title}>This app is for drivers now only</Text>
-      {loggedIn ? (
+    <Layout style={{ flex: 1, justifyContent: "center" }}>
+      <Text style={{ textAlign: "center" }} category={"h2"}>
+        Welcome to Phantom
+      </Text>
+      <Text category={"h2"}>This app is for drivers now only</Text>
+      <Divider />
+      {loading ? (
         <Button
-          onPress={() => navigation.navigate("Profile")}
-          title="Continue"
-        />
+          accessoryLeft={LoadingIndicator}
+          appearance="filled"
+          status={"success"}
+        >
+          LOADING
+        </Button>
       ) : (
-        <Button onPress={() => navigation.navigate("Login")} title="Login" />
+        <>
+          {loggedIn ? (
+            <Layout
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                padding: 2,
+                marginTop: 5,
+                justifyContent: "center",
+              }}
+            >
+              <Button
+                style={{ marginLeft: 3 }}
+                accessoryLeft={LoginButton}
+                onPress={() => navigation.navigate("Profile")}
+              >
+                CONTINUE
+              </Button>
+              <Button
+                style={{ marginLeft: 3 }}
+                status={"danger"}
+                onPress={() => handleLogout()}
+              >
+                Logout
+              </Button>
+            </Layout>
+          ) : (
+            <Button
+              onPress={() => navigation.navigate("Login")}
+              accessoryLeft={LoginButton}
+            >
+              LOGIN
+            </Button>
+          )}
+        </>
       )}
-    </View>
+    </Layout>
   );
 }
 
