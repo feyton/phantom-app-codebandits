@@ -16,7 +16,7 @@ export const authReducer = createReducer(initialState, (builder) => {
     .addCase(loginUser, (state, action) => {
       state.authenticated = true;
       state.user = action.payload;
-      saveItem("auth", action.payload);
+      saveItem("auth", JSON.stringify(action.payload));
       saveItem("token", action.payload?.access_token);
     })
     .addCase(logoutUser, (state, action) => {

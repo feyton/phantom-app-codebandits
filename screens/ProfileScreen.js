@@ -29,20 +29,20 @@ export default function ProfileScreen({ navigation, route }) {
         setloading(false);
       }
     };
-
+    console.log(data?.inProgress);
     if (!data) {
       fetchProfile();
     }
   }, []);
   return (
-    <Layout style={{ flex: 1, padding: 10 }}>
+    <Layout style={{ flex: 1, padding: 5 }}>
       {data ? (
-        <Layout style={{ paddingTop: 30 }}>
-          <Text category={"h1"} style={{ textAlign: "center" }}>
+        <Layout style={{ paddingTop: 5 }}>
+          <Text category={"h2"} style={{ textAlign: "center" }}>
             BUS MANAGEMENT
           </Text>
-          <Divider/>
-          <Layout style={{marginBottom:10}}>
+          <Divider />
+          <Layout style={{ marginBottom: 10 }}>
             <Text style={{ borderBottomWidth: 2 }}>BUS INFO</Text>
             <Divider />
             <Text style={{ fontFamily: "Lexend" }}>
@@ -52,19 +52,21 @@ export default function ProfileScreen({ navigation, route }) {
               Seats: {data?.bus?.seats}
             </Text>
           </Layout>
-          <Layout style={{marginBottom:5}}>
+          <Layout style={{ marginBottom: 5 }}>
             <Text category={"h2"}>ROUTE INFO</Text>
             <Divider />
-            <Text style={{ fontFamily: "Lexend" }}>
-              Origin: {data?.bus?.route.origin}
-            </Text>
-            <Text style={{ fontFamily: "Lexend" }}>
-              Destination: {data?.bus?.route.destination}
-            </Text>
+            <Layout style={{ flexDirection: "row", justifyContent: "center" }}>
+              <Text style={{ fontFamily: "Lexend" }}>
+                Origin: {data?.bus?.route.origin}
+              </Text>
+              <Text style={{ fontFamily: "Lexend", marginLeft: 4 }}>
+                Destination: {data?.bus?.route.destination}
+              </Text>
+            </Layout>
           </Layout>
           <Layout>
             {data?.bus?.route ? (
-              <BusManagement bus={data.bus} />
+              <BusManagement tripInprogress={data?.inProgress} bus={data.bus} />
             ) : (
               <Text>You don't have a bus or route assigned to you</Text>
             )}

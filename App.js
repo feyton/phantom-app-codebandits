@@ -9,7 +9,8 @@ import {
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
 import { registerRootComponent } from "expo";
 import AppLoading from "expo-app-loading";
-import { useState } from "react";
+import * as Location from "expo-location";
+import { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet } from "react-native";
 import Toast from "react-native-toast-message";
 import { Provider } from "react-redux";
@@ -41,6 +42,8 @@ export default function App(props) {
       />
     );
   }
+
+ 
   return (
     <>
       <Provider store={store}>

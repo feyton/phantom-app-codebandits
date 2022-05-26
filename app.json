@@ -7,10 +7,11 @@
     "icon": "./assets/adaptive-icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/Splash.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "jsEngine": "hermes",
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -24,10 +25,22 @@
           "location",
           "fetch"
         ]
-      }
+      },
+      "config": {
+        "googleMapsApiKey": "AIzaSyAF0Hodeh8qbLBaSALR5flsz3ZylVW3Vok"
+      },
+      "bundleIdentifier": "com.phantom.codebandits"
     },
     "android": {
-      "package": "com.feyton.phantom"
+      "package": "com.phantom.codebandits",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAF0Hodeh8qbLBaSALR5flsz3ZylVW3Vok"
+        }
+      },
+      "permissions": [
+        "ACCESS_BACKGROUND_LOCATION"
+      ]
     }
   },
   "android": {
@@ -39,7 +52,12 @@
     "permissions": [
       "ACCESS_BACKGROUND_LOCATION"
     ],
-    "versionCode": 1
+    "versionCode": 1,
+    "config": {
+      "googleMaps": {
+        "apiKey": "AIzaSyAF0Hodeh8qbLBaSALR5flsz3ZylVW3Vok"
+      }
+    }
   },
   "web": {
     "favicon": "./assets/adaptive-icon.png"
