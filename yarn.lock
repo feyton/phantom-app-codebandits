@@ -3944,11 +3944,6 @@ hermes-profile-transformer@^0.0.6:
   dependencies:
     source-map "^0.7.3"
 
-hex-color-regex@~1.0.2:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/hex-color-regex/-/hex-color-regex-1.0.3.tgz#2175693bc292fe06711b04faee9004790926f9b0"
-  integrity sha1-IXVpO8KS/gZxGwT67pAEeQkm+bA=
-
 hoist-non-react-statics@^3.2.1, hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.2:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz#ece0acaf71d62c2969c2ec59feff42a4b1a85b45"
@@ -4211,13 +4206,6 @@ is-glob@^4.0.1:
   integrity sha512-xelSayHH36ZgE7ZWhli7pW34hNbNl8Ojv5KVmkJD4hBdD3th8Tfk9vYasLM+mXWOZhFkgZfxhLSnrwRr4elSSg==
   dependencies:
     is-extglob "^2.1.1"
-
-is-hexcolor@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/is-hexcolor/-/is-hexcolor-1.0.0.tgz#495fee1a12baaf009c102a799bdec3193211274a"
-  integrity sha1-SV/uGhK6rwCcECp5m97DGTIRJ0o=
-  dependencies:
-    hex-color-regex "~1.0.2"
 
 is-interactive@^1.0.0:
   version "1.0.0"
@@ -5853,12 +5841,10 @@ react-native-svg@^12.3.0:
     css-select "^4.2.1"
     css-tree "^1.0.0-alpha.39"
 
-react-native-sweet-alert@^3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/react-native-sweet-alert/-/react-native-sweet-alert-3.5.0.tgz#e763df5a3603c20886eb6dcdc7396025c234fc96"
-  integrity sha512-h2W7zM+s7C/Ub4dvHK1mSSB3lQbwpYhbwkS3JOPKTY+w23t8rNTOFxUBNeA9K5F98fzz0fPqj6VX2gsuPD1h1A==
-  dependencies:
-    is-hexcolor "^1.0.0"
+react-native-toast-message@^2.1.5:
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/react-native-toast-message/-/react-native-toast-message-2.1.5.tgz#550acb9c6c0f1ee49c6b57b65a56d34e297eb723"
+  integrity sha512-mk3rELtBEhrhWBCN6CTaw0gypgL9ZNauX3xx1LUs4uee9vc0pVsghrKxO57vroUCcNL2hDeZSLJWdQNMCkGeaQ==
 
 react-native-ui-kitten@^4.4.1:
   version "4.4.1"
@@ -6697,11 +6683,6 @@ supports-preserve-symlinks-flag@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz#6eda4bd344a3c94aea376d4cc31bc77311039e09"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
-
-sweetalert2@^11.4.17:
-  version "11.4.17"
-  resolved "https://registry.yarnpkg.com/sweetalert2/-/sweetalert2-11.4.17.tgz#d51a67d034c97b8a9854ce0c161ee21fdd681c4a"
-  integrity sha512-z0iQW5fDdvtoDNle3iHTKunsuNWgPaMifVu0GPtdguR0uVPrvg9gg9bnSQeJ4tx3C7FwJOEnRshxrs6fFItRvw==
 
 tar@^6.0.2, tar@^6.0.5:
   version "6.1.11"

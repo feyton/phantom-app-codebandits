@@ -11,6 +11,7 @@ import { registerRootComponent } from "expo";
 import AppLoading from "expo-app-loading";
 import { useState } from "react";
 import { SafeAreaView, StyleSheet } from "react-native";
+import Toast from "react-native-toast-message";
 import { Provider } from "react-redux";
 import { default as theme } from "./custom-theme.json";
 import useFonts from "./hooks/useFonts";
@@ -66,6 +67,7 @@ export default function App(props) {
           </NavigationContainer>
         </ApplicationProvider>
       </Provider>
+      <Toast />
     </>
   );
 }
