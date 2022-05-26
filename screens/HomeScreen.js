@@ -1,6 +1,8 @@
 import { Button, Divider, Layout, Text } from "@ui-kitten/components";
+import * as Location from "expo-location";
 import * as React from "react";
 import { StyleSheet, ToastAndroid } from "react-native";
+// import { ScrollView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 import { useDispatch } from "react-redux";
 import { LoadingIndicator, LoginButton, LogoutIcon } from "../Icons";
@@ -43,7 +45,15 @@ export default function HomeScreen({ navigation }) {
         setloading(false);
       }
     };
+
+    const requestPermissions = async () => {
+      const foreground = await Location.requestForegroundPermissionsAsync();
+      if (foreground.granted) {
+        await Location.requestBackgroundPermissionsAsync();
+      }
+    };
     getProfile();
+    requestPermissions();
   }, []);
   return (
     <Layout style={{ flex: 1, justifyContent: "center" }}>

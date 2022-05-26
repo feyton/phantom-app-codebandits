@@ -7,7 +7,7 @@ const LoginButton = (props) => (
 );
 const LoadingIndicator = (props) => (
   <View style={[props.style, styles.indicator]}>
-    <Spinner size={"small"} />
+    <Spinner fill="white" size={"small"} />
   </View>
 );
 
@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
   indicator: {
     justifyContent: "center",
     alignItems: "center",
+    color: "white",
   },
 });
 

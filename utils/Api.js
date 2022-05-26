@@ -3,7 +3,7 @@ import * as SecureStore from "expo-secure-store";
 import getValueFor from "./getItem";
 import saveItem from "./SaveItem";
 
-export const base = "https://phantom-codebandits.herokuapp.com";
+export const base = "http://phantom.co.rw";
 
 const axiosBase = axios.create({
   baseURL: base + "/api/v1",

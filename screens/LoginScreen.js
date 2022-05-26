@@ -35,7 +35,6 @@ export default function LoginScreen({ navigation }) {
     formState: { errors, isValid },
   } = useForm({ mode: "onChange" });
   const onSubmit = async (data) => {
-    console.log(data);
     try {
       setloading(true);
       seterr(null);
@@ -143,6 +142,7 @@ export default function LoginScreen({ navigation }) {
             disabled={!isValid}
             onPress={handleSubmit(onSubmit)}
             accessoryLeft={loading ? LoadingIndicator : LoginButton}
+            status={loading ? "success" : "primary"}
           >
             <Text> {!loading ? "Login" : "Sending"}</Text>
           </Button>
