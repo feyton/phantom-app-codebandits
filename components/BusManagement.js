@@ -1,21 +1,22 @@
-import { Button, Layout, Spinner, Text } from "@ui-kitten/components";
+import { Button, Divider, Layout, Text } from "@ui-kitten/components";
 import * as Location from "expo-location";
 import * as TaskManager from "expo-task-manager";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
+import Toast from "react-native-toast-message";
+import { LoadingIndicator } from "../Icons";
 import axiosBase from "../utils/Api";
 import socket from "../utils/Socket";
+
+const LATITUDE = -1.7073612;
+const LONGITUDE = 29.9526;
+const LATITUDE_DELTA = 0.009;
+const LONGITUDE_DELTA = 0.009;
 
 const LOCATION_GETTER = "LOCATION_GETTER";
 let setStateFn = () => {
   console.log("State not ready");
 };
-
-export const LoadingIndicator = (props) => (
-  <View style={[props.style, styles.indicator]}>
-    <Spinner size={"small"} />
-  </View>
-);
 
 TaskManager.defineTask(LOCATION_GETTER, async ({ data, error }) => {
   if (error) {
@@ -62,8 +63,18 @@ function BusManagement({ bus }) {
       const res = await axiosBase.post("/simulate", { passengers: 5 });
       setId(res?.data?.data?.bus?.entityId);
       setOngoing(true);
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: `The trip successfully started ⚡`,
+      });
     } catch (error) {
       console.log("Server error");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: `${error?.message} ⚡`,
+      });
       return;
     } finally {
       setloading(false);
@@ -79,7 +90,8 @@ function BusManagement({ bus }) {
       showsBackgroundLocationIndicator: true,
       foregroundService: {
         notificationTitle: "Location",
-        notificationBody: "Phantom is getting background location",
+        notificationBody:
+          "You have a trip underway. We are using location in background",
         notificationColor: "#fff",
       },
     });
@@ -116,7 +128,13 @@ function BusManagement({ bus }) {
       });
       setId(null);
       setOngoing(false);
+      setPosition(null);
     }
+    Toast.show({
+      type: "success",
+      text1: "Success",
+      text2: `The trip stopped ⚡`,
+    });
   };
   const handleAlight = async () => {
     if (id && ongoing) {
@@ -128,6 +146,11 @@ function BusManagement({ bus }) {
         id,
         passengers: 3,
       });
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: `Bus info updated ⚡`,
+      });
     }
   };
   useEffect(() => {
@@ -137,50 +160,68 @@ function BusManagement({ bus }) {
         await Location.requestForegroundPermissionsAsync();
       }
     };
+    const clearWatch = async () => {
+      const hasStarted = await Location.hasStartedLocationUpdatesAsync(
+        LOCATION_GETTER
+      );
+      if (hasStarted) {
+        await Location.stopLocationUpdatesAsync(LOCATION_GETTER);
+        setPosition(null);
+        console.log("Location stopped on start");
+      }
+    };
+    clearWatch();
     requestPermissions();
   }, []);
   return (
     <Layout>
-      <Text category={"h2"}>Real time updates</Text>
+      <Text category={"h2"} style={{ textAlign: "center" }}>
+        Real time updates
+      </Text>
+      <Divider />
       <Text style={{ fontFamily: "Lexend" }}>
         Longitude: {position?.longitude}
       </Text>
       <Text style={{ fontFamily: "Lexend" }}>
         Latitude: {position?.latitude}
       </Text>
+      <Divider />
       <Layout
         style={{
           display: "flex",
           flexDirection: "row",
           padding: 2,
           marginTop: 5,
+          flexWrap: "wrap",
+          justifyContent: "center",
         }}
       >
         <Button
-          style={{ marginLeft: 3 }}
-          status={"info"}
+          style={{ marginLeft: 3, marginVertical: 3 }}
+          status={"primary"}
           onPress={bgTrackStart}
           disabled={ongoing}
+          accessoryLeft={loading && LoadingIndicator}
         >
-          Start Trip
+          <Text style={{ fontFamily: "Lexend" }}>START</Text>
         </Button>
         <Button
-          style={{ marginLeft: 3 }}
+          style={{ marginLeft: 3, marginVertical: 3 }}
           status={"warning"}
           onPress={handleAlight}
           disabled={!ongoing}
+          accessoryLeft={loading && LoadingIndicator}
         >
-          Alight
+          <Text style={{ fontFamily: "Lexend" }}>ALIGHT</Text>
         </Button>
         <Button
-          style={{ marginLeft: 3 }}
+          style={{ marginLeft: 3, marginVertical: 3 }}
           status={"danger"}
           onPress={bgTrackStop}
           disabled={!ongoing}
-          appearance="outline"
           accessoryLeft={loading && LoadingIndicator}
         >
-          Finish Trip
+          <Text style={{ fontFamily: "Lexend" }}>FINISH</Text>
         </Button>
       </Layout>
     </Layout>

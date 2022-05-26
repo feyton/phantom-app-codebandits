@@ -1,5 +1,5 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
-import { axiosBase } from "../../utils/Api.js";
+import axiosBase from "../../utils/Api.js";
 import clearItem from "../../utils/clearItem.js";
 import saveItem from "../../utils/SaveItem.js";
 

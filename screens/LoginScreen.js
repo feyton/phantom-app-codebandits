@@ -9,8 +9,14 @@ import {
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet } from "react-native";
+import Toast from "react-native-toast-message";
 import { useDispatch } from "react-redux";
-import { LoadingIndicator } from "../components/BusManagement";
+import {
+  InvalidIcon,
+  LoadingIndicator,
+  LoginButton,
+  ValidIcon,
+} from "../Icons";
 import { loginUser } from "../redux/reducers/authReducer";
 import styles from "../styles";
 import axiosBase from "../utils/Api";
@@ -18,6 +24,7 @@ import axiosBase from "../utils/Api";
 export default function LoginScreen({ navigation }) {
   const [loading, setloading] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [err, seterr] = useState(false);
   const dispatch = useDispatch();
   const {
     register,
@@ -31,11 +38,17 @@ export default function LoginScreen({ navigation }) {
     console.log(data);
     try {
       setloading(true);
+      seterr(null);
       const res = await axiosBase.post("/accounts/login", data);
       dispatch(loginUser(res.data.data));
       navigation.navigate("Profile");
     } catch (error) {
-      console.log(error);
+      seterr(error?.response?.data?.data?.message || error.message);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: `${error?.response?.data?.data?.message || error.message} 🚦`,
+      });
     } finally {
       setloading(false);
     }
@@ -53,7 +66,13 @@ export default function LoginScreen({ navigation }) {
           name="email"
           render={({ field: { onChange, value, onBlur } }) => (
             <Input
-              label={"Email: "}
+              label={(evaProps) => (
+                <Text {...evaProps}>
+                  <Text style={{ fontSize: 16, margin: 10, marginLeft: 15 }}>
+                    Email:
+                  </Text>
+                </Text>
+              )}
               style={styles.textInput}
               value={value}
               onBlur={onBlur}
@@ -62,6 +81,8 @@ export default function LoginScreen({ navigation }) {
               keyboardType="email-address"
               autoFocus={true}
               textContentType="emailAddress"
+              autoCapitalize="none"
+              accessoryRight={errors?.email ? InvalidIcon : ValidIcon}
             />
           )}
           rules={{
@@ -70,8 +91,7 @@ export default function LoginScreen({ navigation }) {
               message: "Email is required",
             },
             pattern: {
-              value:
-                /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+              value: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
               message: "Enter a valid email",
             },
           }}
@@ -87,7 +107,13 @@ export default function LoginScreen({ navigation }) {
           }}
           render={({ field: { onChange, value, onBlur } }) => (
             <Input
-              label={"Password: "}
+              label={(evaProps) => (
+                <Text {...evaProps}>
+                  <Text style={{ fontSize: 16, margin: 10, marginLeft: 15 }}>
+                    Password:
+                  </Text>
+                </Text>
+              )}
               style={styles.textInput}
               placeholder="Password"
               value={value}
@@ -95,24 +121,32 @@ export default function LoginScreen({ navigation }) {
               onChangeText={(value) => onChange(value)}
               textContentType="password"
               secureTextEntry={!visible}
+              autoCapitalize="none"
+              accessoryRight={errors?.password ? InvalidIcon : ValidIcon}
             />
           )}
         ></Controller>
+        <Text style={{ fontWeight: "700" }} status={"danger"}>
+          {err}
+        </Text>
         <CheckBox
-          style={mainStyles.checkbox}
+          style={{ ...mainStyles.checkbox, marginBottom: 10 }}
           checked={visible}
           onChange={() => setVisible(!visible)}
         >
           {"Show password"}
         </CheckBox>
 
-        <Button
-          disabled={!isValid}
-          onPress={handleSubmit(onSubmit)}
-          accessoryLeft={loading ? LoadingIndicator : ""}
-        >
-          {!loading ? "Login" : "Sending"}
-        </Button>
+        <Layout style={{ flexDirection: "row", justifyContent: "center" }}>
+          <Button
+            style={{ paddingHorizontal: 20 }}
+            disabled={!isValid}
+            onPress={handleSubmit(onSubmit)}
+            accessoryLeft={loading ? LoadingIndicator : LoginButton}
+          >
+            <Text> {!loading ? "Login" : "Sending"}</Text>
+          </Button>
+        </Layout>
       </Layout>
     </Layout>
   );

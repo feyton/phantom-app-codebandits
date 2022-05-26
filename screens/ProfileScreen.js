@@ -1,11 +1,18 @@
-import { Layout, Text } from "@ui-kitten/components";
+import { Button, Divider, Layout, Text } from "@ui-kitten/components";
 import React, { useEffect, useState } from "react";
+import Toast from "react-native-toast-message";
 import BusManagement from "../components/BusManagement";
+import { LoadingIndicator } from "../Icons";
 import axiosBase from "../utils/Api";
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation, route }) {
+  let res_data = null;
+  if (route?.params?.res_data) {
+    res_data = route.params.res_data;
+  }
+
   const [loading, setloading] = useState(false);
-  const [data, setData] = useState();
+  const [data, setData] = useState(res_data);
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -13,44 +20,74 @@ export default function ProfileScreen() {
         const res = await axiosBase.get("/accounts/profile");
         setData(res.data.data);
       } catch (error) {
-        console.log(error?.response);
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: `${error?.response?.data?.data?.message || error?.message} ⚡`,
+        });
       } finally {
         setloading(false);
       }
     };
 
-    fetchProfile();
+    if (!data) {
+      fetchProfile();
+    }
   }, []);
   return (
-    <Layout style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+    <Layout style={{ flex: 1, padding: 10 }}>
       {data ? (
-        <Layout>
-          <Text style={{ fontSize: 16, fontWeight: "700" }}>Profile</Text>
-          <Layout>
-            <Text style={{ borderBottomWidth: 2 }}>ABOUT ME</Text>
-            <Text>
-              {data.user.firstName} {data.user.lastName}
-            </Text>
-            <Text>National Id: {data.nationalID}</Text>
-          </Layout>
-          <Layout>
+        <Layout style={{ paddingTop: 30 }}>
+          <Text category={"h1"} style={{ textAlign: "center" }}>
+            BUS MANAGEMENT
+          </Text>
+          <Divider/>
+          <Layout style={{marginBottom:10}}>
             <Text style={{ borderBottomWidth: 2 }}>BUS INFO</Text>
-            <Text>
-              {data.user.firstName} {data.user.lastName}
+            <Divider />
+            <Text style={{ fontFamily: "Lexend" }}>
+              Plate: {data?.bus?.plateNumber}
             </Text>
-            <Text>National Id: {data.nationalID}</Text>
+            <Text style={{ fontFamily: "Lexend" }}>
+              Seats: {data?.bus?.seats}
+            </Text>
+          </Layout>
+          <Layout style={{marginBottom:5}}>
+            <Text category={"h2"}>ROUTE INFO</Text>
+            <Divider />
+            <Text style={{ fontFamily: "Lexend" }}>
+              Origin: {data?.bus?.route.origin}
+            </Text>
+            <Text style={{ fontFamily: "Lexend" }}>
+              Destination: {data?.bus?.route.destination}
+            </Text>
           </Layout>
           <Layout>
-            <Text style={{ borderBottomWidth: 2 }}>ROUTE INFO</Text>
-            <Text>Origin: {data?.bus?.route.origin}</Text>
-            <Text>Destination: {data?.bus?.route.destination}</Text>
-          </Layout>
-          <Layout>
-            {data?.bus?.route ? <BusManagement bus={data.bus} /> : ""}
+            {data?.bus?.route ? (
+              <BusManagement bus={data.bus} />
+            ) : (
+              <Text>You don't have a bus or route assigned to you</Text>
+            )}
           </Layout>
         </Layout>
       ) : (
-        <Text style={{ fontSize: 16, fontWeight: "700" }}>Loading</Text>
+        <Layout
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            padding: 2,
+            marginTop: 5,
+            justifyContent: "center",
+          }}
+        >
+          <Button
+            accessoryLeft={LoadingIndicator}
+            appearance="filled"
+            status={"success"}
+          >
+            LOADING
+          </Button>
+        </Layout>
       )}
     </Layout>
   );

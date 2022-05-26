@@ -1,29 +1,44 @@
-import { Button, Divider, Icon, Layout, Text } from "@ui-kitten/components";
+import { Button, Divider, Layout, Text } from "@ui-kitten/components";
 import * as React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, ToastAndroid } from "react-native";
+import Toast from "react-native-toast-message";
 import { useDispatch } from "react-redux";
-import { LoadingIndicator } from "../components/BusManagement";
+import { LoadingIndicator, LoginButton, LogoutIcon } from "../Icons";
 import { logoutUser } from "../redux/reducers/authReducer";
 import axiosBase from "../utils/Api";
-const LoginButton = (props) => <Icon name={"facebook"} {...props}></Icon>;
 
 export default function HomeScreen({ navigation }) {
   const [loading, setloading] = React.useState(false);
   const [loggedIn, setAuth] = React.useState(false);
+  const [data, setData] = React.useState();
   const dispatch = useDispatch();
-  const handleLogout = () => {
-    dispatch(logoutUser);
-    setAuth(false);
+  const handleLogout = async () => {
+    try {
+      setloading(true);
+      await axiosBase.get("/accounts/logout");
+      dispatch(logoutUser());
+      setAuth(false);
+    } catch (error) {
+      ToastAndroid.show(error?.message, ToastAndroid.SHORT);
+    } finally {
+      setloading(false);
+    }
   };
 
   React.useEffect(() => {
     const getProfile = async () => {
       try {
         setloading(true);
-        await axiosBase.get("/accounts/profile");
+        const res = await axiosBase.get("/accounts/profile");
+        setData(res.data?.data);
         setAuth(true);
+        Toast.show({
+          type: "success",
+          text1: "welcome",
+          text2: "A session was found 👋",
+        });
       } catch (error) {
-        console.log(error?.response);
+        setAuth(false);
       } finally {
         setloading(false);
       }
@@ -32,19 +47,31 @@ export default function HomeScreen({ navigation }) {
   }, []);
   return (
     <Layout style={{ flex: 1, justifyContent: "center" }}>
-      <Text style={{ textAlign: "center" }} category={"h2"}>
+      <Text style={{ textAlign: "center" }} category={"h1"}>
         Welcome to Phantom
       </Text>
-      <Text category={"h2"}>This app is for drivers now only</Text>
+      <Text style={{ textAlign: "center", marginBottom: 5 }} category={"h2"}>
+        This app is for drivers now only
+      </Text>
       <Divider />
       {loading ? (
-        <Button
-          accessoryLeft={LoadingIndicator}
-          appearance="filled"
-          status={"success"}
+        <Layout
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            padding: 2,
+            marginTop: 5,
+            justifyContent: "center",
+          }}
         >
-          LOADING
-        </Button>
+          <Button
+            accessoryLeft={LoadingIndicator}
+            appearance="filled"
+            status={"success"}
+          >
+            LOADING
+          </Button>
+        </Layout>
       ) : (
         <>
           {loggedIn ? (
@@ -60,7 +87,11 @@ export default function HomeScreen({ navigation }) {
               <Button
                 style={{ marginLeft: 3 }}
                 accessoryLeft={LoginButton}
-                onPress={() => navigation.navigate("Profile")}
+                onPress={() =>
+                  navigation.navigate("Profile", {
+                    res_data: data,
+                  })
+                }
               >
                 CONTINUE
               </Button>
@@ -68,17 +99,28 @@ export default function HomeScreen({ navigation }) {
                 style={{ marginLeft: 3 }}
                 status={"danger"}
                 onPress={() => handleLogout()}
+                accessoryLeft={loading ? LoadingIndicator : LogoutIcon}
               >
                 Logout
               </Button>
             </Layout>
           ) : (
-            <Button
-              onPress={() => navigation.navigate("Login")}
-              accessoryLeft={LoginButton}
+            <Layout
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                padding: 2,
+                marginTop: 5,
+                justifyContent: "center",
+              }}
             >
-              LOGIN
-            </Button>
+              <Button
+                onPress={() => navigation.navigate("Login")}
+                accessoryLeft={LoginButton}
+              >
+                LOGIN
+              </Button>
+            </Layout>
           )}
         </>
       )}
